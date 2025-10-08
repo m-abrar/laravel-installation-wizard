@@ -4,52 +4,34 @@
 
 @section('content')
 
-    <div class="container">
-        <h2 class="h4 mb-3">Package Installation Status</h2>
+    <div class="p-4">
+        <h2 class="h3 mb-4 text-white text-center">
+            <i class="bi bi-terminal-fill me-2 text-primary-accent"></i> Package Installation Status
+        </h2>
 
         @if($error)
-            <div class="alert alert-danger">
-                <strong>Error:</strong> {{ $message }}
+            <div class="alert alert-danger shadow-sm mb-4" style="background-color: #ff4d4d20; border-color: #ff4d4d; color: #ff4d4d; border-radius: 8px;">
+                <i class="bi bi-exclamation-octagon-fill me-2"></i> <strong>Installation Failed:</strong> {{ $message }}
             </div>
         @else
-            <div class="alert alert-success">
-                <strong>Success:</strong> {{ $message }}
+            <div class="alert alert-success shadow-sm mb-4" style="background-color: #4CAF5020; border-color: #4CAF50; color: #4CAF50; border-radius: 8px;">
+                <i class="bi bi-check-circle-fill me-2"></i> <strong>Success:</strong> {{ $message }}
             </div>
         @endif
 
-        {{-- Show detailed output --}}
-        <div class="mt-4">
-            <h5>Details:</h5>
+        {{-- Show detailed output (The premium console log) --}}
+        <h5 class="mt-4 text-white-50">Installation Log:</h5>
+        <div class="log-output-container">
             {!! $details !!}
         </div>
 
         @if (!$error)
-            <div class="text-center">
-                <a href="{{ route('install.migration') }}" class="btn btn-primary mt-4">
-                🌱 Import Demo (database)
+            <div class="text-center mt-5">
+                <a href="{{ route('install.migration') }}" class="btn btn-primary btn-lg px-5 shadow-lg">
+                    <i class="bi bi-database-fill-up me-2"></i> Run Database Migration
                 </a>
             </div>
         @endif
     </div>
 
-    <style>
-        pre {
-            background-color: #f4f4f4;
-            border: 1px solid #ccc;
-            padding: 15px;
-            font-size: 14px;
-            color: #333;
-            overflow-x: auto;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            line-height: 1.5;
-            border-radius: 4px;
-            word-wrap: break-word;
-            max-height: 300px;
-        }
-
-        pre code {
-            font-family: 'Courier New', Courier, monospace;
-        }
-    </style>
 @endsection

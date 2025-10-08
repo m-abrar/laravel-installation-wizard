@@ -2,100 +2,46 @@
     $steps = [
         'welcome' => 'Welcome',
         'requirements' => 'System Requirements',
-        'database' => 'Database Configuration',
-        'packages' => 'Install Packages',
+        'database' => 'Database',
+        'packages' => 'Packages',
         'migration' => 'Import Demo',
-        'admin' => 'Create Admin',
+        'admin' => 'Admin',
         'final' => 'Finish'
     ];
     // Get the current step by extracting the part of the route name before the dot
-    $currentStep = explode('.', request()->route()->getName())[1];
+    $route_parts = explode('.', request()->route()->getName());
+    $currentStep = count($route_parts) > 1 ? $route_parts[1] : 'welcome';
+    $stepKeys = array_keys($steps);
+    $currentStepIndex = array_search($currentStep, $stepKeys);
 @endphp
 
 
-<div class="container py-5">
-    <!-- Step Indicators -->
-    <div class="d-flex justify-content-center align-items-center mb-4 position-relative flex-wrap">
-        @foreach (array_keys($steps) as $index => $step)
-            <div class="step text-center position-relative d-flex flex-column align-items-center">
-                <div class="icon-wrapper mb-2">
-                    @if ($index < array_search($currentStep, array_keys($steps)))
-                        <i class="bi bi-check-circle text-success fs-2 p-2"></i>
-                    @elseif ($step === $currentStep)
-                        <i class="bi bi-check-circle text-warning fs-2 p-2"></i>
+<div class="d-flex justify-content-center align-items-center mb-5 flex-wrap step-progress-bar">
+    @foreach ($stepKeys as $index => $step)
+        @php
+            $isCompleted = $index < $currentStepIndex;
+            $isCurrent = $step === $currentStep;
+            $statusClass = $isCompleted ? 'step-completed' : ($isCurrent ? 'step-current' : 'step-pending');
+        @endphp
+
+        <div class="step text-center position-relative d-flex flex-column align-items-center {{ $statusClass }}">
+            <div class="icon-wrapper mb-2">
+                <div class="step-icon-circle d-flex align-items-center justify-content-center">
+                    @if ($isCompleted)
+                        <i class="bi bi-check-lg"></i>
+                    @elseif ($isCurrent)
+                        <i class="bi bi-gear-fill"></i>
                     @else
-                        <i class="bi bi-x-circle text-muted fs-2 p-2"></i>
+                        <span class="fw-bold">{{ $index + 1 }}</span>
                     @endif
                 </div>
-                <div class="step-label">{{ $steps[$step] }}</div>
             </div>
+            <div class="step-label mt-2">{{ $steps[$step] }}</div>
+        </div>
 
-            {{-- Add connector line except after the last item --}}
-            @if ($index < count($steps) - 1)
-                <div class="step-line"></div>
-            @endif
-        @endforeach
-    </div>
+        {{-- Add connector line except after the last item --}}
+        @if ($index < count($steps) - 1)
+            <div class="step-line {{ $isCompleted ? 'line-completed' : ($isCurrent ? 'line-current' : 'line-pending') }}"></div>
+        @endif
+    @endforeach
 </div>
-
-
-<!-- Bootstrap Icons CDN -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-
-<!-- Custom Styles -->
-<style>
-
-.step-line {
-    width: 40px;
-    height: 2px;
-    background-color: #ccc;
-    margin: 0 5px;
-}
-
-@media (max-width: 768px) {
-    .step-line {
-        display: none; /* Hide on small screens */
-    }
-}
-
-
-    .step {
-        margin: 0 10px;
-        padding: 10px;
-        text-align: center;
-        font-size: 16px;
-    }
-    .step .icon-wrapper {
-        font-size: 30px; /* Default size for the main tick icon */
-    }
-    .step-label {
-        font-size: 14px;
-        margin-top: 5px;
-    }
-    .step.disabled {
-        opacity: 0.5;
-    }
-    .step .bi {
-        color: #d6d6d6; /* Gray for next incomplete steps */
-    }
-    .step .bi.text-warning {
-        color: #fd7e14; /* Orange/Red for current step */
-    }
-    .step .bi.text-success {
-        color: #28a745; /* Green for completed steps */
-    }
-    .step .bi.text-muted {
-        color: #d6d6d6; /* Gray for next steps */
-    }
-    /* Custom class for larger check-circle icon */
-    .fs-2 {
-        font-size: 2rem;
-    }
-    /* Custom background for step label and icon */
-    .bg-light {
-        background-color:rgb(165, 165, 165);
-    }
-    .step-label i {
-        margin-right: 8px;
-    }
-</style>
